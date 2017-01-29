@@ -1,7 +1,10 @@
 package: github.com/jordanpotter/chromedriver2har
 import:
+- package: github.com/jordanpotter/har
+  version: ^1.2.0
+- package: github.com/fedesog/webdriver
+  version: 6f14c445a22cbbd7a136733ac3bc0e91b97cd97a
 - package: github.com/pkg/errors
   version: ^0.8.0
-- package: github.com/fedesog/webdriver
-- package: github.com/jordanpotter/har
-  version: ~1.2.0
+- package: github.com/stretchr/testify
+  version: ^1.1.4

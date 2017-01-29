@@ -1,9 +1,8 @@
-package har
+package chromedriver2har
 
 import (
 	"encoding/json"
 	"net"
-	"net/url"
 )
 
 type ChromeLogEntry struct {
@@ -47,7 +46,7 @@ type NetworkLoadingFinished struct {
 }
 
 type Request struct {
-	URL              url.URL           `json:"url"`
+	URL              string            `json:"url"`
 	Method           string            `json:"method"`
 	Headers          map[string]string `json:"headers"`
 	PostData         *string           `json:"postData"`
@@ -56,7 +55,7 @@ type Request struct {
 }
 
 type Response struct {
-	URL                url.URL                `json:"url"`
+	URL                string                 `json:"url"`
 	Status             int                    `json:"status"`
 	StatusText         string                 `json:"statusText"`
 	Headers            map[string]string      `json:"headers"`

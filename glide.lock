@@ -1,5 +1,5 @@
-hash: 497cf4cf1b3e4dc9c4da70dfc2e1e45c0ba10bf43c5de9eca0255e7e46e7d250
-updated: 2017-01-08T22:00:27.931578317-08:00
+hash: 703001aa919cb77edfc4700a109a2b841b15f090c5f4f87a17363caaf34ab909
+updated: 2017-01-29T08:48:46.67685436-08:00
 imports:
 - name: github.com/fedesog/webdriver
   version: 6f14c445a22cbbd7a136733ac3bc0e91b97cd97a
@@ -7,4 +7,6 @@ imports:
   version: d96bfa4b3c53eb63693ec888bc4d01854c9b8188
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
+- name: github.com/stretchr/testify
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
 testImports: []
