@@ -15,12 +15,21 @@ type Message struct {
 	Params json.RawMessage `json:"params"`
 }
 
+type PageDOMContentEventFired struct {
+	Timestamp float64 `json:"timestamp"`
+}
+
+type PageLoadEventFired struct {
+	Timestamp float64 `json:"timestamp"`
+}
+
 type NetworkRequestWillBeSent struct {
 	RequestID        string    `json:"requestId"`
 	LoaderID         string    `json:"loaderId"`
 	DocumentURL      string    `json:"documentURL"`
 	Request          Request   `json:"request"`
 	Timestamp        float64   `json:"timestamp"`
+	WallTime         float64   `json:"wallTime"`
 	RedirectResponse *Response `json:"redirectResponse"`
 }
 

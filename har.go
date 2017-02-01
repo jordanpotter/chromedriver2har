@@ -8,18 +8,39 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	harVersion     = "1.2"
+	creatorName    = "chromedriver2har"
+	creatorVersion = "0.1"
+)
+
 func New(logEntries []webdriver.LogEntry) (*har.HAR, error) {
 	chromeLogEntries, err := chromeLogEntries(logEntries)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create chrome log entries")
 	}
 
-	_, err = harEntries(chromeLogEntries)
+	page, err := harPage(chromeLogEntries)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create HAR page")
+	}
+
+	entries, err := harEntries(chromeLogEntries)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create HAR entries")
 	}
 
-	return &har.HAR{}, nil
+	return &har.HAR{
+		Log: har.Log{
+			Version: harVersion,
+			Creator: har.Creator{
+				Name:    creatorName,
+				Version: creatorVersion,
+			},
+			Pages:   []har.Page{page},
+			Entries: entries,
+		},
+	}, nil
 }
 
 func chromeLogEntries(logEntries []webdriver.LogEntry) ([]ChromeLogEntry, error) {
@@ -27,64 +48,9 @@ func chromeLogEntries(logEntries []webdriver.LogEntry) ([]ChromeLogEntry, error)
 	for _, logEntry := range logEntries {
 		var chromeEntry ChromeLogEntry
 		if err := json.Unmarshal([]byte(logEntry.Message), &chromeEntry); err != nil {
-			return nil, errors.Wrap(err, "failed to unmarshal log entry")
+			return nil, errors.Wrapf(err, "failed to unmarshal log entry at timestamp %d", logEntry.TimeStamp)
 		}
 		chromeLogEntries = append(chromeLogEntries, chromeEntry)
 	}
 	return chromeLogEntries, nil
-}
-
-func harEntries(chromeLogEntries []ChromeLogEntry) ([]har.Entry, error) {
-	for _, chromeLogEntry := range chromeLogEntries {
-		var err error
-
-		switch chromeLogEntry.Message.Method {
-		case "Network.requestWillBeSent":
-			err = processRequestWillBeSent(chromeLogEntry.Message.Params)
-		case "Network.responseReceived":
-			err = processResponseReceived(chromeLogEntry.Message.Params)
-		case "Network.dataReceived":
-			err = processDataReceived(chromeLogEntry.Message.Params)
-		case "Network.loadingFinished":
-			err = processLoadingFinished(chromeLogEntry.Message.Params)
-		}
-
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to parse entry %q", chromeLogEntry.Message.Method)
-		}
-	}
-
-	return nil, nil
-}
-
-func processRequestWillBeSent(params json.RawMessage) error {
-	var data NetworkRequestWillBeSent
-	if err := json.Unmarshal(params, &data); err != nil {
-		return errors.Wrap(err, "failed to unmarshal NetworkRequestWillBeSent data")
-	}
-	return nil
-}
-
-func processResponseReceived(params json.RawMessage) error {
-	var data NetworkResponseReceived
-	if err := json.Unmarshal(params, &data); err != nil {
-		errors.Wrap(err, "failed to unmarshal NetworkResponseReceived data")
-	}
-	return nil
-}
-
-func processDataReceived(params json.RawMessage) error {
-	var data NetworkDataReceived
-	if err := json.Unmarshal(params, &data); err != nil {
-		return errors.Wrap(err, "failed to unmarshal NetworkDataReceived data")
-	}
-	return nil
-}
-
-func processLoadingFinished(params json.RawMessage) error {
-	var data NetworkLoadingFinished
-	if err := json.Unmarshal(params, &data); err != nil {
-		return errors.Wrap(err, "failed to unmarshal NetworkLoadingFinished data")
-	}
-	return nil
 }
